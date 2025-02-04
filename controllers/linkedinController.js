@@ -31,15 +31,19 @@ exports.org = async (req, res) => {
     try {
         const orgName = req.params.key;
         let Org = await getOrganization(orgName);
-        const LocId = Org.locations[0].geoLocation.replace('urn:li:geo:', '');
-        let mediaId = Org.logoV2.cropped.replace('urn:li:digitalmediaAsset:', '');
-        let geo = await getDetail('geo', LocId);
-        let img = await getDetail('digitalmediaAsset', mediaId);
-
-        res.status(200).send({ data: Org, loc: geo, media: img });
+        const LocId = Array.isArray(Org?.locations) ? Org?.locations[0]?.geoLocation.replace('urn:li:geo:', '') : Org?.locations?.geoLocation.replace('urn:li:geo:', '');
+        let geo;
+        if (LocId) {
+            geo = await getDetail('geo', LocId)
+        }
+        if (Org) {
+            res.status(200).send({ data: Org, loc: geo });
+        } else {
+            res.status(200).send({ error: "Org Not Found!" });
+        }
     } catch (error) {
         console.error(error);
-        return res.status(200).send({ error: error.message });
+        return res.status(500).send({ error: error.message });
     }
 };
 
