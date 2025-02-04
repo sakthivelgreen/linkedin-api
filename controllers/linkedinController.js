@@ -39,7 +39,7 @@ exports.org = async (req, res) => {
         if (Org) {
             res.status(200).send({ data: Org, loc: geo });
         } else {
-            res.status(200).send({ error: "Org Not Found!" });
+            res.status(404).send({ error: "Org Not Found!" });
         }
     } catch (error) {
         console.error(error);
